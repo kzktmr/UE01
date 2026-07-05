@@ -19,10 +19,11 @@
 
 | ファイル | 内容 |
 |---|---|
-|  |  |
+| `vaccination_summary_by_prefecture.csv` | 都道府県別累積接種回数サマリー（厚生労働省） |
 |  |  |
 
+データの出所：
 
-- https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou/yobou-sesshu/syukeihou_00002.html
+- [厚生労働省「特例臨時接種期間における新型コロナワクチンの接種回数について」](https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou/yobou-sesshu/syukeihou_00002.html)
 - https://covid19.mhlw.go.jp
 
