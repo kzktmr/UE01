@@ -43,14 +43,18 @@ View(covid_data)
 population_data <- list() # 空のリストを作成
 population_data[[1]] <- 
   read_excel(
-    path = "data/a001.xls",                # Excelファイル名
-    range = "I13:J59",                     # 読み込む範囲
-    col_names = c("都道府県", "Prefecture") # 
+    path = "data/a001.xls", # Excelファイル名
+    range = "I13:M59",      # 読み込む範囲
+    col_names = c("都道府県", "Prefecture", "Population"), # 列名を指定
+    col_types = c("text", "text", "skip", "skip", "numeric") # 列の型を指定（不要な列はスキップ） 
   )
 View(population_data[[1]])
 
 population_data[[1]] <- population_data[[1]] |> 
-  mutate(Prefecture = str_remove(Prefecture, "-ken$|-to$|-fu$")) # 末尾の「-ken」「-to」「-fu」を削除
+  mutate(
+    Prefecture = str_remove(Prefecture, "-ken$|-to$|-fu$"), # 末尾の「-ken」「-to」「-fu」を削除
+    Prefecture = if_else(Prefecture == "Gumma", "Gunma", Prefecture) # 群馬県の表記を修正（ヘボン式→訓令式）
+  )
 View(population_data[[1]])
 
 population_data[[2]] <- 
@@ -70,6 +74,23 @@ population_data <- population_data |>
 View(population_data)
 
 population_data <- population_data |>
-  select(都道府県, Prefecture, DID_Density) # 必要な列のみを抽出
+  select(-c(DID_Population, DID_Area)) # 不要な列を削除
 View(population_data)
 
+# データの結合 ====
+dat <- population_data |> 
+  left_join(covid_data, by = "Prefecture") # 都道府県名をキーに結合
+View(dat)
+
+dat <- dat |> 
+  mutate(Confirmed_Cases_per_Capita = Confirmed_Cases / Population * 100) # 人口あたりの感染者数を計算
+View(dat)
+
+ggplot(dat, aes(x = Confirmed_Cases_per_Capita, y = DID_Density)) +
+  geom_point() +
+  labs(
+    title = "人口密度とCOVID-19の感染率",
+    x = "感染率（新規感染者数累計／人口）",
+    y = "DID人口密度"
+  ) +
+  theme_bw()
