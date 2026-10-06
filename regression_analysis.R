@@ -7,6 +7,8 @@
 
 library(tidyverse)
 library(readxl)
+library(ggrepel) # 散布図でラベルが重ならないようにするためのライブラリ
+
 
 # データの読み込み ====
 
@@ -91,6 +93,7 @@ dat <- read_csv("data/dat.csv")
 ggplot(dat, aes(x = DID_Density, y = Confirmed_Cases_per_Capita)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) + # 回帰直線を描く
+  geom_text_repel(aes(label = 都道府県), size = 3, max.overlaps = Inf) + # 都道府県名をラベルとして表示（全県）
   labs(
     title = "DID人口密度とCOVID-19の感染率",
     x = "DID人口密度（人／km²）",
@@ -111,6 +114,7 @@ summary(model1)
 ggplot(dat, aes(x = Vaccination_Rate, y = Confirmed_Cases_per_Capita)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
+  geom_text_repel(aes(label = 都道府県), size = 3, max.overlaps = Inf) +
   labs(
     title = "ワクチン接種率とCOVID-19の感染率",
     x = "ワクチン接種率（%）",
@@ -120,7 +124,7 @@ ggplot(dat, aes(x = Vaccination_Rate, y = Confirmed_Cases_per_Capita)) +
 
 
 # 重回帰分析 ----
-# 感染率 = a + b1 × DID人口密度 + b2 × 3回目接種率
+# 感染率 = a + b1 × DID人口密度 + b2 × ワクチン接種率
 
 model2 <- lm(Confirmed_Cases_per_Capita ~ DID_Density + Vaccination_Rate, data = dat)
 summary(model2)
