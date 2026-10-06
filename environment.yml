@@ -1,6 +1,6 @@
 channels:
   - conda-forge
 dependencies:
-  - r-base=4.4.3
+  - r-base
   - r-tidyverse
   - r-readxl
