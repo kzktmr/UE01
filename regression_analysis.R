@@ -131,3 +131,60 @@ summary(model2)
 
 # 確認ポイント：DID_Density の係数（Estimate）が 0.000557 前後になっていればOK
 # 考えてみよう：model1 と model2 で、DID_Density の係数はどう変わったか？ それはなぜか？
+
+
+# 課題：説明変数を1つ追加した重回帰分析 ====
+# ★ の付いた行を、自分が選んだ変数に合わせて書き換える。
+# 以下は例として「高齢化率（65歳以上人口の割合）」を追加している。
+# 課題では、この例とは別の変数を選ぶこと。
+
+# 追加する変数を読み込む ----
+
+add_data <-
+  read_excel(
+    path = "data/a001.xls",
+    range = "AX13:AX59",    # ★ 読み込む列（行は13〜59のまま、列の記号だけ変える）
+    col_names = "Elderly",  # ★ 列名（自由に決めてよい。英数字と _ だけを使う）
+    col_types = "numeric"
+  )
+View(add_data)
+
+# 2020年の人口（2020年の値しかない変数を、人口で割るときに使う）
+pop2020_data <-
+  read_excel(
+    path = "data/a001.xls",
+    range = "M13:M59",
+    col_names = "Population_2020",
+    col_types = "numeric"
+  )
+
+# 人口に対する割合（%）を計算する ----
+# 2022年や2021年の変数は Population で、2020年の変数は Population_2020 で割る
+
+dat2 <- dat |>
+  bind_cols(add_data, pop2020_data) |> # dat と同じ都道府県の順番なので、横に並べられる
+  mutate(Elderly_Rate = Elderly / Population * 100) # ★ 新しい変数名 = 計算式
+View(dat2)
+
+# 追加した変数と感染率の散布図 ----
+
+ggplot(dat2, aes(x = Elderly_Rate, y = Confirmed_Cases_per_Capita)) + # ★ x = 新しい変数名
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_text_repel(aes(label = 都道府県), size = 3, max.overlaps = Inf) +
+  labs(
+    title = "高齢化率とCOVID-19の感染率", # ★ グラフのタイトル
+    x = "高齢化率（%）",                   # ★ 横軸のラベル
+    y = "感染率（%）"
+  ) +
+  theme_bw()
+
+# 重回帰分析 ----
+
+model3 <- lm(
+  Confirmed_Cases_per_Capita ~ DID_Density + Vaccination_Rate + Elderly_Rate, # ★ 最後を新しい変数名に
+  data = dat2
+)
+summary(model3)
+
+# 考えてみよう：model2 と比べて、DID_Density の係数はどう変わったか？ 追加した変数の係数はどう解釈できるか？
