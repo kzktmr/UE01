@@ -19,7 +19,7 @@
 
 | ファイル | 内容 |
 |---|---|
-| `a201.xls` | 基礎データ A 人口・世帯（総務省統計局） |
+| `a001.xls` | 基礎データ A 人口・世帯（総務省統計局） |
 | `kenbetsu-vaccination_data3.xlsx` | 接種回数の都道府県別実績（厚生労働省） |
 | `confirmed_cases_cumulative_daily.csv` | 都道府県別累積陽性者数の日次推移（厚生労働省） |
 
